@@ -12,6 +12,11 @@ tested with Ubuntu (18.04), please install PyTorch first following the official 
 ## Datasets
 decompress all files and put them in data/datasets/
 
+copy dir diligent_test to data/datasets/DiLiGenT/pmsData_crop/
+
+generate cycles dataset:
+put cycles_train.m in the dir which have PRPS and PRPS_Diffuse(Spline-Net Dataset) and run cycles_train.m in matlab
+
 ## Testing
 ### Test SDPS-Net on the DiLiGenT main dataset
 ```shell
