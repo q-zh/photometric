@@ -20,6 +20,7 @@ class UPS_DiLiGenT_main(data.Dataset):
         self.objs  = util.readList(os.path.join(self.root, 'objects.txt'), sort=False)
         self.names = util.readList(os.path.join(self.root, 'names.txt'),   sort=False)
         self.l_dir = util.light_source_directions()
+        self.test_set = args.test_set
         args.log.printWrite('[%s Data] \t%d objs %d lights. Root: %s' % 
                 (split, len(self.objs), len(self.names), self.root))
         self.ints = {}
@@ -37,7 +38,10 @@ class UPS_DiLiGenT_main(data.Dataset):
     def __getitem__(self, index):
         np.random.seed(index)
         obj = self.objs[index]
-        select_idx = range(len(self.names))
+        f = os.path.join(self.root, 'diligent_test') + '/' + str(self.test_set) + '/' + obj + '.txt'
+        idx_read = np.loadtxt(f, dtype = int, delimiter = '\\')
+        select_idx = list(idx_read - 1)
+        # select_idx = range(len(self.names))
 
         img_list = [os.path.join(self.root, obj, self.names[i]) for i in select_idx]
         ints = [np.diag(1 / self.ints[obj][i]) for i in select_idx]
@@ -49,7 +53,8 @@ class UPS_DiLiGenT_main(data.Dataset):
         imgs = []
         for idx, img_name in enumerate(img_list):
             img = imread(img_name).astype(np.float32) / 255.0
-            if self.args.in_light and not self.args.int_aug:
+            # if self.args.in_light and not self.args.int_aug:
+            if not self.args.int_aug:
                 img = np.dot(img, ints[idx])
             imgs.append(img)
         img = np.concatenate(imgs, 2)

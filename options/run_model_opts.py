@@ -14,6 +14,7 @@ class RunModelOpts(BaseOpts):
         self.parser.add_argument('--test_batch', default=1,   type=int)
         self.parser.add_argument('--test_disp',  default=1,   type=int)
         self.parser.add_argument('--test_save',  default=1,   type=int)
+        self.parser.add_argument('--test_set',  default=2,   type=int)
         
         ### For UPS_Custom_Datast.py to test you own dataset
         self.parser.add_argument('--have_l_dirs', default=False, action='store_true', help='Have light directions?')

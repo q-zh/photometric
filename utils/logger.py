@@ -59,7 +59,8 @@ class Logger(object):
         if hasattr(args, 'run_model') and args.run_model:
             log_root = os.path.join(os.path.dirname(args.retrain), dir_name)
             args.log_dir = log_root
-            sub_dirs = ['test']
+            # sub_dirs = ['test']
+            sub_dirs = ['test/' + str(args.test_set)]
         else:
             if args.resume and os.path.isfile(args.resume):
                 log_root = os.path.join(os.path.dirname(os.path.dirname(args.resume)), dir_name)

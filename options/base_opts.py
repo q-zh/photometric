@@ -8,10 +8,10 @@ class BaseOpts(object):
 
     def initialize(self):
         #### Trainining Dataset ####
-        self.parser.add_argument('--dataset',     default='UPS_PRPS_Dataset')
-        self.parser.add_argument('--data_dir',    default='data/datasets/PRPS_Dataset')
+        self.parser.add_argument('--dataset',     default='UPS_Synth_Dataset')
+        self.parser.add_argument('--data_dir',    default='data/datasets/PS_Blobby_Dataset')
         self.parser.add_argument('--data_dir2',   default='data/datasets/PS_Sculpture_Dataset')
-        self.parser.add_argument('--concat_data', default=False, action='store_false')
+        self.parser.add_argument('--concat_data', default=True, action='store_false')
         self.parser.add_argument('--l_suffix',    default='_mtrl.txt')
 
         #### Training Data and Preprocessing Arguments ####
@@ -54,7 +54,7 @@ class BaseOpts(object):
         self.parser.add_argument('--use_BN',      default=False, action='store_true')
         self.parser.add_argument('--resume',      default=None)
         self.parser.add_argument('--retrain',     default=None)
-        self.parser.add_argument('--save_intv',   default=3,     type=int)
+        self.parser.add_argument('--save_intv',   default=1,     type=int)
 
         #### Stage 2 Model Arguments ####
         self.parser.add_argument('--stage2',      default=False, action='store_true')
@@ -66,11 +66,11 @@ class BaseOpts(object):
         self.parser.add_argument('--s2_in_light', default=True,  action='store_false')
 
         #### Displaying Arguments ####
-        self.parser.add_argument('--train_disp',    default=5,  type=int)
-        self.parser.add_argument('--train_save',    default=20, type=int)
+        self.parser.add_argument('--train_disp',    default=20,  type=int)
+        self.parser.add_argument('--train_save',    default=200, type=int)
         self.parser.add_argument('--val_intv',      default=1,   type=int)
-        self.parser.add_argument('--val_disp',      default=10,   type=int)
-        self.parser.add_argument('--val_save',      default=10,   type=int)
+        self.parser.add_argument('--val_disp',      default=1,   type=int)
+        self.parser.add_argument('--val_save',      default=1,   type=int)
         self.parser.add_argument('--max_train_iter',default=-1,  type=int)
         self.parser.add_argument('--max_val_iter',  default=-1,  type=int)
         self.parser.add_argument('--max_test_iter', default=-1,  type=int)

@@ -10,10 +10,10 @@ class TrainOpts(BaseOpts):
         self.parser.add_argument('--solver',      default='adam', help='adam|sgd')
         self.parser.add_argument('--milestones',  default=[2, 4, 6, 8, 10], nargs='+', type=int)
         self.parser.add_argument('--start_epoch', default=1,      type=int)
-        self.parser.add_argument('--epochs',      default=200,     type=int)
+        self.parser.add_argument('--epochs',      default=20,     type=int)
         self.parser.add_argument('--batch',       default=8,     type=int)
-        self.parser.add_argument('--val_batch',   default=1,      type=int)
-        self.parser.add_argument('--init_lr',     default=0.0005, type=float)
+        self.parser.add_argument('--val_batch',   default=8,      type=int)
+        self.parser.add_argument('--init_lr',     default=0.00001, type=float)
         self.parser.add_argument('--lr_decay',    default=0.5,    type=float)
         self.parser.add_argument('--beta_1',      default=0.9,    type=float, help='adam')
         self.parser.add_argument('--beta_2',      default=0.999,  type=float, help='adam')
@@ -28,7 +28,7 @@ class TrainOpts(BaseOpts):
         self.parser.add_argument('--ints_loss',   default='mse',  help='mse')
         self.parser.add_argument('--ints_w',      default=1,      type=float)
         self.parser.add_argument('--rec_loss', default='L1',  help='L1|L2')
-        self.parser.add_argument('--rec_w',    default=120,      type=float)
+        self.parser.add_argument('--rec_w',    default=3000,      type=float)
 
     def collectInfo(self): 
         BaseOpts.collectInfo(self)

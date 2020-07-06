@@ -22,38 +22,37 @@ def test(args, split, loader, models, log, epoch, recorder):
     disp_intv, save_intv, stop_iters = get_itervals(args, split)
     res = []
     with torch.no_grad():
-        for j in range(200):
-            for i, sample in enumerate(loader):
-                data = model_utils.parseData(args, sample, timer, split)
-                input = model_utils.getInput(args, data)
+        for i, sample in enumerate(loader):
+            data = model_utils.parseData(args, sample, timer, split)
+            input = model_utils.getInput(args, data)
 
-                pred_c = models[0](input); timer.updateTime('Forward')
-                input.append(pred_c)
-            
-                s2_est_obMp = True
-                if s2_est_obMp:
-                    start_loc, end_loc = 32, 96
-                    random_loc = torch.randint(start_loc,end_loc,[2,1])
-                    input.append(random_loc)
-                    data['ob_map_real'] = model_utils.parseData_stage2(args, sample, random_loc, 'train')
+            pred_c = models[0](input); timer.updateTime('Forward')
+            input.append(pred_c)
+        
+            s2_est_obMp = True
+            if s2_est_obMp:
+                start_loc, end_loc = 32, 96
+                random_loc = torch.randint(start_loc,end_loc,[2,1])
+                input.append(random_loc)
+                data['ob_map_real'] = model_utils.parseData_stage2(args, sample, random_loc, 'train')
 
-                pred = models[1](input); timer.updateTime('Forward')
-                input.pop()
-                recoder, iter_res, error = prepareRes(args, data, pred_c, pred,random_loc, recorder, log, split)
+            pred = models[1](input); timer.updateTime('Forward')
+            input.pop()
+            recoder, iter_res, error = prepareRes(args, data, pred_c, pred,random_loc, recorder, log, split)
 
-                res.append(iter_res)
-                iters = j * 4 + i + 1
-                if iters % disp_intv == 0:
-                    opt = {'split':split, 'epoch':epoch, 'iters':iters, 'batch':200 * len(loader), 
-                            'timer':timer, 'recorder': recorder}
-                    log.printItersSummary(opt)
+            res.append(iter_res)
+            iters = i + 1
+            if iters % disp_intv == 0:
+                opt = {'split':split, 'epoch':epoch, 'iters':iters, 'batch':len(loader), 
+                        'timer':timer, 'recorder': recorder}
+                log.printItersSummary(opt)
 
-                if iters % save_intv == 0:
-                    results, nrow = prepareSave(args, data, pred_c, pred, random_loc)
-                    log.saveImgResults(results, split, epoch, iters, nrow=nrow, error='')
-                    log.plotCurves(recorder, split, epoch=epoch, intv=disp_intv)
+            if iters % save_intv == 0:
+                results, nrow = prepareSave(args, data, pred_c, pred, random_loc)
+                log.saveImgResults(results, split, epoch, iters, nrow=nrow, error='')
+                log.plotCurves(recorder, split, epoch=epoch, intv=disp_intv)
 
-                if stop_iters > 0 and iters >= stop_iters: break
+            if stop_iters > 0 and iters >= stop_iters: break
     res = np.vstack([np.array(res), np.array(res).mean(0)])
     save_name = '%s_res.txt' % (args.suffix)
     np.savetxt(os.path.join(args.log_dir, split, save_name), res, fmt='%.2f')

@@ -8,44 +8,43 @@ def train(args, loader, models, criterion, optimizers, log, epoch, recorder):
     optimizer, optimizer_c = optimizers
     log.printWrite('---- Start Training Epoch %d: %d batches ----' % (epoch, len(loader)))
     timer = time_utils.Timer(args.time_sync);
-    for j in range(200):
-        for i, sample in enumerate(loader):
-            data = model_utils.parseData(args, sample, timer, 'train')
-            input = model_utils.getInput(args, data)
-            with torch.no_grad():
-                pred_c = models[0](input); 
-            input.append(pred_c)
-            s2_est_obMp = True
-            if s2_est_obMp:
-                start_loc, end_loc = 32, 96
-                random_loc = torch.randint(start_loc,end_loc,[2,1])
-                input.append(random_loc)
-                data['ob_map_real'] = model_utils.parseData_stage2(args, sample, random_loc, 'train')
+    for i, sample in enumerate(loader):
+        data = model_utils.parseData(args, sample, timer, 'train')
+        input = model_utils.getInput(args, data)
+        with torch.no_grad():
+            pred_c = models[0](input); 
+        input.append(pred_c)
+        s2_est_obMp = True
+        if s2_est_obMp:
+            start_loc, end_loc = 32, 96
+            random_loc = torch.randint(start_loc,end_loc,[2,1])
+            input.append(random_loc)
+            data['ob_map_real'] = model_utils.parseData_stage2(args, sample, random_loc, 'train')
 
-            pred = models[1](input); timer.updateTime('Forward')
-            input.pop()
-            optimizer.zero_grad()
+        pred = models[1](input); timer.updateTime('Forward')
+        input.pop()
+        optimizer.zero_grad()
 
-            loss = criterion.forward(pred, data, random_loc, s2_est_obMp); 
-            timer.updateTime('Crit');
-            criterion.backward(); timer.updateTime('Backward')
+        loss = criterion.forward(pred, data, random_loc, s2_est_obMp); 
+        timer.updateTime('Crit');
+        criterion.backward(); timer.updateTime('Backward')
 
-            recorder.updateIter('train', loss.keys(), loss.values())
+        recorder.updateIter('train', loss.keys(), loss.values())
 
-            optimizer.step(); timer.updateTime('Solver')
+        optimizer.step(); timer.updateTime('Solver')
 
-            iters = j * 5 + i + 1
-            if iters % args.train_disp == 0:
-                opt = {'split':'train', 'epoch':epoch, 'iters':iters, 'batch':200 * len(loader), 
-                        'timer':timer, 'recorder': recorder}
-                log.printItersSummary(opt)
+        iters = i + 1
+        if iters % args.train_disp == 0:
+            opt = {'split':'train', 'epoch':epoch, 'iters':iters, 'batch':len(loader), 
+                    'timer':timer, 'recorder': recorder}
+            log.printItersSummary(opt)
 
-            if iters % args.train_save == 0:
-                results, recorder, nrow = prepareSave(args, data, pred_c, pred, random_loc, recorder, log) 
-                log.saveImgResults(results, 'train', epoch, iters, nrow=nrow)
-                log.plotCurves(recorder, 'train', epoch=epoch, intv=args.train_disp)
+        if iters % args.train_save == 0:
+            results, recorder, nrow = prepareSave(args, data, pred_c, pred, random_loc, recorder, log) 
+            log.saveImgResults(results, 'train', epoch, iters, nrow=nrow)
+            log.plotCurves(recorder, 'train', epoch=epoch, intv=args.train_disp)
 
-            if args.max_train_iter > 0 and iters >= args.max_train_iter: break
+        if args.max_train_iter > 0 and iters >= args.max_train_iter: break
     opt = {'split': 'train', 'epoch': epoch, 'recorder': recorder}
     log.printEpochSummary(opt)
 
